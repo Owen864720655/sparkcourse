@@ -46,16 +46,38 @@ object SeqExample {
     //一个List拼接一个元素,得到[5,1,2,3,4]
     val listFour = 5 :: listThree
     val listConcat = 1 :: 2 :: 3 :: 4 :: Nil
-    println(listFour)
-    println(listConcat)
+    println(listFour.slice(0, 3))
   }
 
   def mapExample(): Unit = {
     //默认为immutable HashMap
-    val fixMap = Map("China" -> 1, "UK" -> 2, "USA" -> 3)
-    
+    var fixMap = Map("China" -> 1, "UK" -> 2, "USA" -> 3)
+    fixMap = fixMap + ("Canada" -> 4)
+    println(fixMap("China"))
+    println(fixMap.getOrElse("Japan", 0))
+    val mutableMap = scala.collection.mutable.Map[String, Int]()
+    for ((k, v) <- fixMap) {
+      mutableMap(k) = v
+    }
   }
 
+  def tupleExample(): Unit = {
+    //tuple主要是能够自动识别变量类型，自己查看类型
+    val tuple = (1, 2.0, "Spark", "Scala")
+    //> tuple  : (Int, Double, String, String) = (1, 2.0, Spark, Scala)
+    //遍历时从1开始,可以加占位符序列进行访问
+    val one = tuple._1
+    //>res4: String = Spark
+    //可以把tuple给一变量，如果只需一部分，其他的用占位符代替
+    val (first, second, third, fourth) = tuple //> first  : Int = 1
+    //first: Int = 1
+    //second: Double = 2.0
+    //third: String = Spark
+    //fourth: String = Scala
+    val (a, b, _, _) = tuple 
+    //> a  : Int = 1
+    //| b  : Double = 2.0
+  }
   def main(args: Array[String]): Unit = {
     listExample()
   }

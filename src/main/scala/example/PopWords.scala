@@ -1,6 +1,8 @@
 package example;
+
 /**
- * 使用的数据是TPCH的DBGEN生成的测试数据，这里使用
+ * spark使用scala脚本编程示例
+ *  使用的数据是TPCH的DBGEN生成的测试数据，这里使用
  * CREATE TABLE NATION  ( N_NATIONKEY  INTEGER NOT NULL,
  * N_NAME       CHAR(25) NOT NULL,
  * N_REGIONKEY  INTEGER NOT NULL,
@@ -17,7 +19,9 @@ package example;
  */
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
-object PopWords {
+import ExampleUtils._
+
+object popwords {
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf()
     val sc = new SparkContext(conf)
@@ -29,12 +33,7 @@ object PopWords {
     wordCounts1.map(rec => (rec._2, rec._1)).top(10)
   }
 
-  def getSparkContext(): SparkContext = {
-    //初始化SparkContext
-    val conf = new SparkConf()
-    val sc = new SparkContext(conf)
-    return sc
-  }
+
 
   /**
    * 这是最不推荐的方法，它导致每次任务分发时，nationMap都需要被传输一次
