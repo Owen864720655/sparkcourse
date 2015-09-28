@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/scala"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/xiafan/bin/spark-1.5.0-bin-hadoop1/lib/spark-assembly-1.5.0-hadoop1.2.1.jar"/>
 	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/xiafan/bin/spark-1.5.0-bin-hadoop1/lib/spark-assembly-1.5.0-hadoop1.2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

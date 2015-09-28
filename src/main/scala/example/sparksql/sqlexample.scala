@@ -1,13 +1,13 @@
 package example.sparksql
+import example.ExampleUtils._
 
-import example.PopWords
 
 /**
  * @author xiafan
  */
 class sqlexample {
   def createTables(): Unit = {
-    val sc = PopWords.getSparkContext()
+    val sc = getSparkContext()
     // sc is an existing SparkContext. 
     val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     // this is used to implicitly convert an RDD to a DataFrame. 

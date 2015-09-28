@@ -7,9 +7,10 @@ package example
 
 //空类
 class Person {
-  private var name = "";
-  private var age: Int;
-  private var gender: Boolean;
+  private var name = ""
+  private var age: Int=1
+  private var gender: Boolean=false
+ 
   def this(name: String, age: Int, gender: Boolean) {
     this()
     this.name = name

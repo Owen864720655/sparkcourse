@@ -3,7 +3,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.SparkConf
-import example.PopWords
+import example.ExampleUtils._
 
 /**
  * @author xiafan
@@ -17,11 +17,11 @@ case class Customer(custID: Int,
   mktsegment: String,
   comment: String)
 //http://doc.okbase.net/u014388509/archive/119763.html
-  //http://blog.csdn.net/oopsoom/article/details/42064075
+//http://blog.csdn.net/oopsoom/article/details/42064075
 object dfexample {
 
   def main(args: Array[String]): Unit = {
-    val sc = PopWords.getSparkContext()
+    val sc = getSparkContext()
     // sc is an existing SparkContext. 
     val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     // this is used to implicitly convert an RDD to a DataFrame. 
@@ -39,7 +39,7 @@ object dfexample {
     customers.groupBy("mktsegment").count().show()
     customers.groupBy("mktsegment").sum("acctbal").show()
     customers.groupBy("mktsegment").max("acctbal").show()
-    customers.filter(customers("BUILDING") == "BUILD").show()
+    customers.filter("BUILDING=='BUILD'").show()
     sqlContext.sql("select * from customers where mktsegment = 'BUILDING'").show()
   }
 }
