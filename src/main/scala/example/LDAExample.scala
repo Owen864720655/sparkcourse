@@ -49,7 +49,7 @@ object LDAExample {
     val sc = getSparkContext()
     // Load and parse the data
     val data = sc.textFile("data/sparkDocuments.txt")
-    val tf = new HashingTF(100000)
+    val tf = new HashingTF(1000000)
     val tokenizer = new Tokenizer()
     val parsedData = data.map(s => tf.transform(s.trim.split(" ")))
     val mapping = data.flatMap(s => s.trim.split(" ").map(word => (tf.indexOf(word), word))).distinct()
@@ -59,7 +59,7 @@ object LDAExample {
 
     // 使用LDA训练3个话题
     val topicNum = 5
-    val ldaModel = new LDA().setK(topicNum).run(corpus)
+    val ldaModel = new LDA().setK(topicNum).setMaxIterations(20).run(corpus)
 
     // Output topics. Each is a distribution over words (matching word count vectors)
     println("Learned topics (as distributions over vocab of " + ldaModel.vocabSize + " words):")
@@ -75,17 +75,17 @@ object LDAExample {
     //以下代码只是为了显示好看
     var topics = new ArrayBuffer[(Int, (Int, Double))]()
     var topicIdx = 1
-    for (words <- ldaModel.describeTopics(5)) {
+    for (words <- ldaModel.describeTopics(10)) {
       words._1.zip(words._2).foreach(x => topics += ((x._1, (topicIdx, x._2))))
       //      topics+= (topicIdx, ())
-      println(words._1.zip(words._2).mkString(","))
+     // println(words._1.zip(words._2).mkString(","))
       topicIdx+=1
     }
 
     val topicsRDD = sc.parallelize(topics,1)
     val ret = mapping.join(topicsRDD)
     //Array[(Int, (String, (Int, Double)))] = Array((1504,(//,(1,0.016686350599884367)))
-    ret.collect().map(x => (x._2._2._1, (x._2._2._2, x._2._1))).sorted.foreach(println)
+    ret.collect().map(x => (x._2._2._1, (x._2._2._2, x._2._1,x._1))).sorted.foreach(println)
     // Save and load model.
     ldaModel.save(sc, "myLDAModel")
     val sameModel = DistributedLDAModel.load(sc, "myLDAModel")
