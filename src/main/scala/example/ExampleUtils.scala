@@ -8,8 +8,8 @@ import org.apache.spark.SparkConf
 object ExampleUtils {
   def getSparkContext(): SparkContext = {
     //初始化SparkContext
-    val conf = new SparkConf()
-    val sc = new SparkContext(conf)
+    //val conf = new SparkConf()
+    val sc = new SparkContext("local", "test", "")
     return sc
   }
 }
