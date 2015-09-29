@@ -1,17 +1,21 @@
 package example
 
+import java.io.BufferedReader
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileWriter
+import java.io.InputStreamReader
+import java.io.StringReader
+import java.nio.charset.Charset
+import java.nio.charset.CodingErrorAction
 import scala.collection.mutable.ArrayBuffer
-import scala.io.Source
 import org.apache.spark.mllib.clustering.DistributedLDAModel
 import org.apache.spark.mllib.clustering.LDA
 import org.apache.spark.mllib.feature.HashingTF
-import example.ExampleUtils._
+import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
 import org.wltea.analyzer.core.IKSegmenter
 import org.wltea.analyzer.core.Lexeme
-import java.io.StringReader
-import java.io.FileFilter
+import example.ExampleUtils.getSparkContext
 
 /**
  * @author xiafan
@@ -23,7 +27,7 @@ object LDAExample {
    * args[1]: output merged file
    */
   def mergeFiles(args: Array[String]): Unit = {
-     var contents = new ArrayBuffer[String]()
+    var contents = new ArrayBuffer[String]()
     val dir: File = new File(args(0))
     val writer = new FileWriter(args(1))
     mergeFile(dir, writer)
@@ -37,10 +41,19 @@ object LDAExample {
       if (!file.isDirectory()) {
         println(file.toString())
         val content = new StringBuffer()
-        for (line <- Source.fromFile(file, "utf8").getLines()) {
-          content.append(line)
-          content.append(" ")
-        }
+        val in = new FileInputStream(file);
+        val decoder = Charset.forName("UTF-8").newDecoder();
+        decoder.onMalformedInput(CodingErrorAction.IGNORE);
+        val reader = new BufferedReader(new InputStreamReader(in, decoder))
+        var line: String = null
+        do {
+          line = reader.readLine()
+          if (line != null) {
+            content.append(line.replace("&nbsp", " "))
+            content.append(" ")
+          }
+        } while (line != null);
+        in.close()
         writer.write(content.toString())
         writer.write("\n")
       } else {
@@ -50,10 +63,14 @@ object LDAExample {
   }
 
   def train(): Unit = {
-      val sc = getSparkContext()
+    val sc = getSparkContext()
     // Load and parse the data
-    val data = sc.textFile("/Users/xiafan/Downloads/corpus.txt")
-    val stopwords = sc.broadcast(sc.textFile("/Users/xiafan/Documents/dataset/sparklecture/stopwords.txt")
+    var corpusFile = "/Users/xiafan/Downloads/corpus.txt"
+    corpusFile = "/home/xiafan/dataset/spark/ml/corpus.txt"
+    var stopwordsFile = "/Users/xiafan/Documents/dataset/sparklecture/stopwords.txt"
+    stopwordsFile = "/home/xiafan/dataset/spark/ml/stopwords.txt"
+    val data = sc.textFile(corpusFile)
+    val stopwords = sc.broadcast(sc.textFile(stopwordsFile)
       .collect().toSet)
     val tf = new HashingTF()
     // val tokenizer = new Tokenizer()
@@ -91,8 +108,8 @@ object LDAExample {
     val corpus = parsedData.zipWithIndex.map(_.swap).cache()
 
     // 使用LDA训练3个话题
-    val topicNum = 5
-    val ldaModel = new LDA().setMaxIterations(3).setK(topicNum).run(corpus)
+    val topicNum = 8
+    val ldaModel = new LDA().setMaxIterations(50).setK(topicNum).run(corpus)
 
     // Output topics. Each is a distribution over words (matching word count vectors)
     println("Learned topics (as distributions over vocab of " + ldaModel.vocabSize + " words):")
@@ -108,7 +125,7 @@ object LDAExample {
     //以下代码只是为了显示好看
     var topics = new ArrayBuffer[(Int, (Int, Double))]()
     var topicIdx = 1
-    for (words <- ldaModel.describeTopics(10)) {
+    for (words <- ldaModel.describeTopics(20)) {
       words._1.zip(words._2).foreach(x => topics += ((x._1, (topicIdx, x._2))))
       //      topics+= (topicIdx, ())
       println(words._1.zip(words._2).mkString(","))
@@ -125,7 +142,7 @@ object LDAExample {
 
   }
   def main(args: Array[String]): Unit = {
-    //mergeFiles(args)
-    train()
+    mergeFiles(args)
+    // train()
   }
 }
