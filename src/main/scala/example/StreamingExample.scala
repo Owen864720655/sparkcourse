@@ -8,9 +8,12 @@ import org.wltea.analyzer.core.Lexeme
 import scala.collection.mutable.ArrayBuffer
 
 /**
+ *
+ * 提交命令
+ *  bin/spark-submit --class example.StreamingExample --master spark://xiafan-Vostro-270:7077 /home/xiafan/temp/spark.jar spark://xiafan-Vostro-270:7077 hdfs://127.0.0.1:9000/user/xiafan/tpch/customer  hdfs://127.0.0.1:9000/user/xiafan/stopword.txt
  * @author xiafan
  */
-object StreamingContext {
+object StreamingExample {
   def main(args: Array[String]) {
     if (args.length < 2) {
       System.err.println("Usage: HdfsWordCount <master> <directory>")
@@ -45,8 +48,8 @@ object StreamingContext {
         })
       }).flatMap { x => x }
 
-    val sc = ExampleUtils.getSparkContext()
-    val stopWords = sc.textFile("").map(x => (x, null))
+    val sc = ssc.sparkContext
+    val stopWords = sc.textFile(args(2)).map(x => (x, null))
 
     val filteredRdd = words.transform(rdd => rdd.map(x => (x, null)).join(stopWords).map(x => x._1))
 

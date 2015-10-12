@@ -82,6 +82,10 @@ object ClassificationExample {
 
     val precision = 1 - scoreAndLabels.filter(r => r._1 != r._2).count.toDouble / testData.count
   }
+
+  def main(args: Array[String]): Unit = {
+
+  }
 }
 
 
