@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 .gitignore~
 .project
 .classpath
 .settings
+=======
+.settings/*
+.cache-main
+.classpath
+>>>>>>> 74da71bb26488e443173fd0a1cd988514e99c8b4
 *.class
 *.log
 bin/*
