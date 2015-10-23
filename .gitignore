@@ -1,3 +1,7 @@
+.gitignore~
+.project
+.classpath
+.settings
 *.class
 *.log
 bin/*
